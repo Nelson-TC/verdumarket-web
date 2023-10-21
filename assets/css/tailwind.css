@@ -2,6 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #e5e5e5;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #a3a3a3;
+    border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #737373;
+}
+
 body {
     @apply bg-neutral-300
 }
@@ -10,6 +43,14 @@ body {
     @apply font-semibold text-neutral-600
 }
 
+.custom-label-input{
+    @apply font-semibold text-neutral-600 mb-1
+}
+
 .custom-input{
-    @apply bg-neutral-300/80 text-neutral-800 font-medium placeholder:text-neutral-500 h-10 rounded-lg outline-none focus:outline-none px-3 focus:ring-2 focus:ring-main-primary
+    @apply bg-neutral-300/80 text-neutral-800 font-medium placeholder:text-neutral-500 h-10 rounded-lg outline-none focus:outline-none px-3 focus:ring-2 focus:ring-main-primary transition-all
+}
+
+.custom-select{
+    @apply px-2 text-neutral-600 font-bold w-full h-10 transition-all border-none rounded-lg focus:outline-none bg-neutral-200 focus:ring-2 focus:ring-main-primary placeholder:font-bold
 }

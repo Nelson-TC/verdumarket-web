@@ -7,11 +7,15 @@ const session = await getSession();
 
 const links = [
   { name: "Inicio", route: "/" },
-  { name: "Iniciar sesión", route: "/login" },
 ];
 
 if (session.user) {
-  links.push({ name: "Productos", route: "/products" })
+  links.push(
+    { name: "Productos", route: "/products" },
+    { name: "Categorias", route: "/categories"}
+  )
+}else{ 
+  links.push({ name: "Iniciar sesión", route: "/login" })
 }
 
 const router = useNuxtApp().$router;
@@ -27,9 +31,18 @@ const currentRoute = computed(() => {
 const logout = () => {
   signOut();
 };
+
+watch(() => show.value, () => {
+    if (show.value) {
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.body.style.overflow = null;
+    }
+});
+
 </script>
 <template>
-  <div class="sticky top-0 z-50 p-1 md:p-2 bg-neutral-300">
+  <div class="sticky top-0 z-40 p-1 md:p-2 bg-neutral-300">
     <div
       class="relative z-50 flex items-center justify-between p-0.5 bg-white rounded-lg shadow fill-main-dark pr-2"
     >
