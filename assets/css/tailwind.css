@@ -43,12 +43,20 @@ body {
     @apply font-semibold text-neutral-600
 }
 
+.custom-label-resizable{
+    @apply font-semibold text-neutral-600 text-sm md:text-base
+}
+
 .custom-label-input{
     @apply font-semibold text-neutral-600 mb-1
 }
 
 .custom-input{
     @apply bg-neutral-300/80 text-neutral-800 font-medium placeholder:text-neutral-500 h-10 rounded-lg outline-none focus:outline-none px-3 focus:ring-2 focus:ring-main-primary transition-all
+}
+
+.custom-input-resizable{
+    @apply bg-neutral-300/80 text-neutral-800 text-sm md:text-base h-8 md:h-10 font-medium placeholder:text-neutral-500 rounded-lg outline-none focus:outline-none px-3 focus:ring-2 focus:ring-main-primary transition-all
 }
 
 .custom-select{

@@ -12,7 +12,11 @@ const links = [
 if (session.user) {
   links.push(
     { name: "Productos", route: "/products" },
-    { name: "Categorias", route: "/categories"}
+    { name: "Crear una venta", route: "/sales/create" },
+    { name: "Aumentar-Disminuir inventario", route: "/inventory/create" },
+    { name: "Categorias", route: "/categories"},
+    { name: "Ventas", route: "/sales"},
+    { name: "Facturas", route: "/invoices"}
   )
 }else{ 
   links.push({ name: "Iniciar sesión", route: "/login" })
@@ -44,7 +48,7 @@ watch(() => show.value, () => {
 <template>
   <div class="sticky top-0 z-40 p-1 md:p-2 bg-neutral-300">
     <div
-      class="relative z-50 flex items-center justify-between p-0.5 bg-white rounded-lg shadow fill-main-dark pr-2"
+      class="relative z-50 flex items-center justify-between p-0.5 bg-white rounded-lg shadow fill-neutral-800 pr-2"
     >
       <!-- Sección de botón de menu lateral -->
       <button

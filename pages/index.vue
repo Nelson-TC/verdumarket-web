@@ -7,16 +7,20 @@ const { getSession } = useAuth();
 
 const session = await getSession();
 
-const authenticatedLinks = [{ label: "Productos", route: "/products" }];
+const authenticatedLinks = [
+  { label: "Productos", route: "/products" },
+  { label: "Hacer una venta", route: "/sales/create" },
+  { label: "Categorías", route: "/categories" },
+];
 </script>
 
 <template>
   <h1 class="mt-4 text-2xl font-black text-center text-neutral-600">Inicio</h1>
   <div class="h-auto max-w-4xl mx-auto mt-4">
-    <div v-if="session.user" class="grid grid-cols-1 mt-4 md:grid-cols-2">
+    <div v-if="session.user" class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2">
       <NuxtLink
         v-for="link in authenticatedLinks"
-        :key="link.route"
+        :key="link.label"
         :to="link.route"
         class="w-full p-4 font-bold bg-white rounded-lg shadow text-neutral-600"
       >

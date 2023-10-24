@@ -6,6 +6,9 @@ export default NuxtAuthHandler({
   pages: {
     signIn: '/login',
   },
+  session: {
+    maxAge: 12 * 60 * 60, // Set the duration of the session to half day - 12 hours
+  },
   providers: [
     // @ts-ignore Import is exported on .default during SSR, so we need to call it this way. May be fixed via Vite at some point
     CredentialsProvider.default({

@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "joi": "^17.11.0",
+    "moment": "^2.29.4",
     "next-auth": "^4.21.1",
     "primeicons": "^6.0.1",
     "vue-toastification": "^2.0.0-rc.5"

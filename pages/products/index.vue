@@ -93,19 +93,19 @@ const openEditModal = (product: any) => {
 };
 
 const storeProduct = async () => {
-  await $fetch("/api/products/store", {
+  await $fetch("/api/products", {
     method: "POST",
     body: { ...createProductForm.value },
   }).then(() => {
     showModal.value = false;
-    resetCreateProductForm()
+    resetCreateProductForm();
     refresh();
     toast.success("Producto creado con éxito");
   });
 };
 
 const updateProduct = async () => {
-  await $fetch(`/api/products/update/${productToEdit.value.id}`, {
+  await $fetch(`/api/products/${productToEdit.value.id}`, {
     method: "PUT",
     body: { ...editProductForm.value },
   }).then(() => {
@@ -127,7 +127,7 @@ const unitMeasurements = Object.values(UnitMeasurements);
   <DeleteModal
     :show="showDeleteModal"
     :record="productToDelete"
-    routeToDelete="/api/products/destroy"
+    routeToDelete="/api/products"
     success-message="Producto eliminado con éxito"
     @close="showDeleteModal = false"
     @success="productDestroyed"
@@ -310,65 +310,67 @@ const unitMeasurements = Object.values(UnitMeasurements);
       </div>
     </form>
   </Modal>
-  <div class="p-2 bg-white rounded-lg shadow">
-    <template v-if="mountLoaded">
-      <DataTable :value="products" :virtualScrollerOptions="{ itemSize: 20 }">
-        <template #header>
-          <div class="flex items-center space-x-2">
-            <h1 class="text-lg font-black md:text-xl">Listado de productos</h1>
-            <div class="flex items-center justify-end flex-1 space-x-2">
-              <button
-                class="inline-flex items-center px-4 py-2 text-sm text-white transition rounded-lg min-w-max md:text-base bg-main-primary hover:brightness-90"
-                @click="openCreateModal"
-              >
-                Crear producto
-              </button>
-            </div>
+  <div class="p-2 bg-white rounded-lg shadow" v-if="mountLoaded">
+    <DataTable
+      class="text-sm md:text-md"
+      :value="products"
+      :virtualScrollerOptions="{ itemSize: 20 }"
+    >
+      <template #header>
+        <div class="flex items-center space-x-2">
+          <h1 class="text-lg font-black md:text-xl">Listado de productos</h1>
+          <div class="flex items-center justify-end flex-1 space-x-2">
+            <button
+              class="inline-flex items-center px-4 py-2 text-sm transition rounded-lg min-w-max md:text-base bg-main-secondary hover:brightness-90"
+              @click="openCreateModal"
+            >
+              Crear producto
+            </button>
           </div>
-          <input
-            id="filter"
-            :value="filter"
-            @input="(e) => (filter = e.target.value)"
-            type="text"
-            class="w-full mt-4 custom-input"
-            placeholder="Buscar productos"
-            autocomplete="off"
-          />
+        </div>
+        <input
+          id="filter"
+          :value="filter"
+          @input="(e) => (filter = e.target.value)"
+          type="text"
+          class="w-full mt-4 custom-input"
+          placeholder="Buscar productos"
+          autocomplete="off"
+        />
+      </template>
+      <Column header="ID" field="id" />
+      <Column header="Nombre" field="name" />
+      <Column header="Precio Unitario">
+        <template #body="{ data }">
+          {{ data.unitPrice.toFixed(2) }}
         </template>
-        <Column header="ID" field="id" />
-        <Column header="Nombre" field="name" />
-        <Column header="Precio Unitario">
-          <template #body="{ data }">
-            {{ data.unitPrice.toFixed(2) }}
-          </template>
-        </Column>
-        <Column header="Inventario" field="stock" />
-        <Column header="Unidad de medida" field="unitMeasurement" />
-        <Column header="Categoría" field="category.name" />
-        <Column header="Acciones">
-          <template #body="{ data }">
-            <div class="flex w-full space-x-6 md:space-x-4">
-              <button
-                @click="openEditModal(data)"
-                class="px-2 py-1.5 text-xs font-semibold text-red-100 transition-colors bg-green-600 rounded-lg hover:bg-green-700"
-              >
-                <i class="h-full pi pi-pencil"></i>
-              </button>
-              <button
-                @click="openDeleteModal(data)"
-                class="px-2 py-1.5 text-xs font-semibold text-red-100 transition-colors bg-red-600 rounded-lg hover:bg-red-700"
-              >
-                <i class="h-full pi pi-times"></i>
-              </button>
-            </div>
-          </template>
-        </Column>
-      </DataTable>
-    </template>
-    <div class="flex items-center justify-center p-12" v-else>
-      <div
-        class="w-10 h-10 border-4 rounded-full border-t-neutral-500 border-l-neutral-500 border-r-neutral-500 border-b-neutral-100 animate-spin"
-      ></div>
-    </div>
+      </Column>
+      <Column header="Inventario" field="stock" />
+      <Column header="Unidad de medida" field="unitMeasurement" />
+      <Column header="Categoría" field="category.name" />
+      <Column header="Acciones">
+        <template #body="{ data }">
+          <div class="flex w-full space-x-6 md:space-x-4">
+            <button
+              @click="openEditModal(data)"
+              class="px-2 py-1.5 text-xs font-semibold text-red-100 transition-colors bg-green-600 rounded-lg hover:bg-green-700"
+            >
+              <i class="h-full pi pi-pencil"></i>
+            </button>
+            <button
+              @click="openDeleteModal(data)"
+              class="px-2 py-1.5 text-xs font-semibold text-red-100 transition-colors bg-red-600 rounded-lg hover:bg-red-700"
+            >
+              <i class="h-full pi pi-times"></i>
+            </button>
+          </div>
+        </template>
+      </Column>
+    </DataTable>
+  </div>
+  <div class="flex items-center justify-center p-12" v-else>
+    <div
+      class="w-10 h-10 border-4 rounded-full border-t-neutral-500 border-l-neutral-500 border-r-neutral-500 border-b-neutral-100 animate-spin"
+    ></div>
   </div>
 </template>
