@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { PDFDocument, rgb } from "pdf-lib";
+import ExcelJS from 'exceljs';
 import { useToast } from "vue-toastification";
 import { UnitMeasurements } from "../../interfaces/unitMeasurements";
 
@@ -13,12 +15,12 @@ const {
   data: products,
   refresh,
   pending,
-} = await useFetch("/api/products/search", {
+} = (await useFetch("/api/products/search", {
   headers,
   query: {
     search_query,
   },
-});
+})) as any;
 
 const { data: categories } = await useFetch("/api/categories", {
   headers,
@@ -121,6 +123,130 @@ const productDestroyed = async () => {
 };
 
 const unitMeasurements = Object.values(UnitMeasurements);
+
+const generatePDFReport = async () => {
+  const pageSize = [612, 792];
+
+  const pdfDoc = await PDFDocument.create();
+
+  const tableData = [
+    [
+      "ID",
+      "Nombre",
+      "Precio Unitario",
+      "Inventario",
+      "Unidad de medida",
+      "Categoría",
+    ],
+    ...products.value.map((product: any) => [
+      product.id.toString(),
+      product.name,
+      product.unitPrice.toFixed(2),
+      product.stock.toString(),
+      product.unitMeasurement,
+      product.category.name,
+    ]),
+  ];
+
+  const rowsPerPage = 36;
+  let currentPage = 0;
+
+  while (currentPage * rowsPerPage < tableData.length) {
+    const page = pdfDoc.addPage(pageSize as [number, number]);
+
+    page.drawText("Informe de Productos (Página " + (currentPage + 1) + ")", {
+      x: 50,
+      y: pageSize[1] - 30,
+      size: 12,
+      color: rgb(0, 0, 0),
+    });
+
+    const startRow = currentPage * rowsPerPage;
+    const endRow = Math.min(startRow + rowsPerPage, tableData.length);
+
+    const cordX: any = {
+      0: 20,
+      1: 20,
+      2: 100,
+      3: 90,
+      4: 80,
+      5: 80,
+    };
+
+    for (let i = 0; i < endRow - startRow; i++) {
+      for (let j = 0; j < tableData[startRow + i].length; j++) {
+        page.drawText(tableData[startRow + i][j], {
+          x: 50 + j * cordX[j as number],
+          y: pageSize[1] - 50 - i * 20,
+          size: 8,
+          color: rgb(0, 0, 0),
+        });
+      }
+    }
+
+    currentPage++;
+  }
+
+  const pdfBytes = await pdfDoc.save();
+
+  const blob = new Blob([pdfBytes], { type: "application/pdf" });
+
+  const url = window.URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "informe.pdf";
+  a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
+
+  window.URL.revokeObjectURL(url);
+};
+
+const generateExcelReport = async () => {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Informe');
+
+  // Define las columnas y agrega los encabezados
+  worksheet.columns = [
+    { header: 'ID', key: 'id', width: 10 },
+    { header: 'Nombre', key: 'name', width: 20 },
+    { header: 'Precio Unitario', key: 'unitPrice', width: 15 },
+    { header: 'Inventario', key: 'stock', width: 12 },
+    { header: 'Unidad de medida', key: 'unitMeasurement', width: 15 },
+    { header: 'Categoría', key: 'category', width: 20 },
+  ];
+
+  // Agrega los datos de productos
+  products.value.forEach((product: any) => {
+    worksheet.addRow({
+      id: product.id,
+      name: product.name,
+      unitPrice: product.unitPrice.toFixed(2),
+      stock: product.stock,
+      unitMeasurement: product.unitMeasurement,
+      category: product.category.name,
+    });
+  });
+
+  // Crea un Blob con el contenido del archivo Excel
+  const buffer = await workbook.xlsx.writeBuffer();
+
+  // Crea una URL de objeto para el Blob
+  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+  // Crea un enlace de descarga y hace clic en él para descargar el Excel
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'informe.xlsx';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+
+  // Libera los recursos del enlace
+  window.URL.revokeObjectURL(url);
+};
 </script>
 
 <template>
@@ -327,6 +453,22 @@ const unitMeasurements = Object.values(UnitMeasurements);
               Crear producto
             </button>
           </div>
+        </div>
+        <div class="space-x-4">
+          <button
+            class="inline-flex items-center p-2.5 text-sm text-white transition bg-red-700 rounded-lg min-w-max md:text-base hover:brightness-75"
+            type="button"
+            @click="generatePDFReport"
+          >
+            <i class="pi pi-file-pdf"></i>
+          </button>
+          <button
+            class="inline-flex items-center p-2.5 text-sm text-white transition bg-green-700 rounded-lg min-w-max md:text-base hover:brightness-75"
+            type="button"
+            @click="generateExcelReport"
+          >
+            <i class="pi pi-file-excel"></i>
+          </button>
         </div>
         <input
           id="filter"
